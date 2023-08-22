@@ -18,7 +18,7 @@ struct NoItemsView: View {
                     .font(.title)
                     .fontWeight(.semibold)
 
-                Text("Are you a productive person? I think you should click the add buttone and add a bunch of items to your to do list!")
+                Text("Are you a productive person? I think you should click the add button and add a bunch of items to your to do list!")
                     .padding(.bottom, 20)
 
                 NavigationLink {
@@ -42,6 +42,7 @@ struct NoItemsView: View {
                 .scaleEffect(animate ? 1.1 : 1.0)
                 .offset(y: animate ? -7 : 0)
             }
+            .frame(maxWidth: 400)
             .multilineTextAlignment(.center)
             .padding(40)
             .onAppear(perform: addAnimation)
