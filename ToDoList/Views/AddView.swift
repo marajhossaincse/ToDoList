@@ -9,59 +9,66 @@ import SwiftUI
 
 struct AddView: View {
     @EnvironmentObject var listViewModel: ListViewModel
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
+    @FocusState private var isTextFieldFocused: Bool
 
-    @State var textFieldText: String = ""
-    @State var alertTitle: String = ""
-    @State var showAlert: Bool = false
+    @State private var textFieldText: String = ""
 
     var body: some View {
-        ScrollView {
-            VStack {
-                TextField("Type something here...", text: $textFieldText)
-                    .padding(.horizontal)
-                    .frame(height: 55)
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(10)
+        Form {
+            Section(header: Text("Task details")) {
+                TextField("e.g., Submit expense report", text: $textFieldText)
+                    .focused($isTextFieldFocused)
+                    .submitLabel(.done)
+                    .textInputAutocapitalization(.sentences)
+            }
 
-                Button {
-                    saveButtonPressed()
-                } label: {
-                    Text("Save".uppercased())
-                        .foregroundColor(.white)
+            Section(footer: Text("Keep the title short and actionable. Minimum 3 characters.")) {
+                Button(action: saveButtonPressed) {
+                    Label("Save Task", systemImage: "checkmark.circle.fill")
                         .font(.headline)
-                        .frame(height: 55)
-                        .frame(maxWidth: .infinity)
-                        .background(Color.accentColor)
-                        .cornerRadius(10)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.accentColor)
+                .disabled(!canSave)
+            }
+        }
+        .navigationTitle("New Item")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") {
+                    dismiss()
                 }
             }
-            .padding(14)
+
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") {
+                    saveButtonPressed()
+                }
+                .disabled(!canSave)
+            }
         }
-        .navigationTitle("Add an item 🖊")
-        .alert(isPresented: $showAlert) {
-            getAlert()
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                isTextFieldFocused = true
+            }
         }
     }
 
     func saveButtonPressed() {
-        if textIsAppropriate() {
-            listViewModel.addItem(title: textFieldText)
-            presentationMode.wrappedValue.dismiss()
-        }
+        guard canSave else { return }
+        listViewModel.addItem(title: trimmedText)
+        dismiss()
     }
 
-    func textIsAppropriate() -> Bool {
-        if textFieldText.count < 3 {
-            alertTitle = "Your new to do item must be at least 3 characters long!!! 😨😰😱"
-            showAlert.toggle()
-            return false
-        }
-        return true
+    private var trimmedText: String {
+        textFieldText.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    func getAlert() -> Alert {
-        return Alert(title: Text(alertTitle))
+    private var canSave: Bool {
+        trimmedText.count >= 3
     }
 }
 

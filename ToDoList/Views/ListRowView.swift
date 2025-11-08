@@ -11,14 +11,40 @@ struct ListRowView: View {
     let item: ItemModel
 
     var body: some View {
-        HStack {
-            Image(systemName: item.isCompleted ? "checkmark.circle" : "circle")
-                .foregroundColor(item.isCompleted ? .green : .red)
-            Text(item.title)
+        HStack(alignment: .center, spacing: 12) {
+            Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
+                .font(.title3.weight(.semibold))
+                .foregroundColor(item.isCompleted ? .green : .secondary)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.title)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                    .lineLimit(3)
+
+                Text(item.isCompleted ? "Completed" : "Tap to mark complete")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
             Spacer()
+
+            if item.isCompleted {
+                Image(systemName: "sparkles")
+                    .foregroundColor(.secondary)
+                    .accessibilityLabel("Task completed")
+            }
         }
-        .font(.title2)
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(Color(.secondarySystemGroupedBackground))
+        )
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(item.isCompleted ? "Double tap to mark as incomplete" : "Double tap to mark as complete")
     }
 }
 

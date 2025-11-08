@@ -13,26 +13,34 @@ struct NoItemsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 10) {
-                Text("There are no items!")
-                    .font(.title)
-                    .fontWeight(.semibold)
+            VStack(spacing: 24) {
+                Image(systemName: "square.and.pencil")
+                    .font(.system(size: 56, weight: .semibold))
+                    .foregroundColor(secondaryAccentColor)
+                    .padding(.bottom, 4)
 
-                Text("Are you a productive person? I think you should click the add button and add a bunch of items to your to do list!")
-                    .padding(.bottom, 20)
+                VStack(spacing: 8) {
+                    Text("Plan your next move")
+                        .font(.title2.weight(.semibold))
+
+                    Text("Capture a few quick tasks to keep your day on track. Short, focused lists are easier to complete.")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                }
+                .multilineTextAlignment(.center)
 
                 NavigationLink {
                     AddView()
                 } label: {
-                    Text("Add Something 🥳")
+                    Label("Add a task", systemImage: "plus")
                         .foregroundColor(.white)
                         .font(.headline)
-                        .frame(height: 55)
+                        .frame(height: 50)
                         .frame(maxWidth: .infinity)
                         .background(animate ? secondaryAccentColor : Color.accentColor)
                         .cornerRadius(10)
                 }
-                .padding(.horizontal, animate ? 30 : 50)
+                .padding(.horizontal, animate ? 24 : 32)
                 .shadow(
                     color: animate ? secondaryAccentColor.opacity(0.7) : Color.accentColor.opacity(0.7),
                     radius: animate ? 30 : 10,
@@ -41,9 +49,13 @@ struct NoItemsView: View {
                 )
                 .scaleEffect(animate ? 1.1 : 1.0)
                 .offset(y: animate ? -7 : 0)
+
+                Text("Tip: You can always reorganize items later with Edit in the top-left corner.")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
             }
             .frame(maxWidth: 400)
-            .multilineTextAlignment(.center)
             .padding(40)
             .onAppear(perform: addAnimation)
         }
