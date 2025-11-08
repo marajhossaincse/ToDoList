@@ -33,6 +33,11 @@ class ListViewModel: ObservableObject {
         items.remove(atOffsets: indexSet)
     }
     
+    func deleteItems(withIDs ids: [String]) {
+        let idSet = Set(ids)
+        items.removeAll { idSet.contains($0.id) }
+    }
+    
     func moveItem(from: IndexSet, to: Int) {
         items.move(fromOffsets: from, toOffset: to)
     }
