@@ -17,15 +17,23 @@ struct ListRowView: View {
                 .foregroundColor(item.isCompleted ? .green : .secondary)
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(item.title)
                     .font(.headline)
                     .foregroundColor(.primary)
                     .lineLimit(3)
 
-                Text(item.isCompleted ? "Completed" : "Tap to mark complete")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                if !item.details.isEmpty {
+                    Text(item.details)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                } else {
+                    Text("No additional details")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
             }
 
             Spacer()
@@ -43,14 +51,20 @@ struct ListRowView: View {
                 .fill(Color(.secondarySystemGroupedBackground))
         )
         .contentShape(Rectangle())
-        .accessibilityElement(children: .combine)
-        .accessibilityHint(item.isCompleted ? "Double tap to mark as incomplete" : "Double tap to mark as complete")
     }
 }
 
 struct ListRowView_Previews: PreviewProvider {
-    static var item1 = ItemModel(title: "First item", isCompleted: false)
-    static var item2 = ItemModel(title: "Second item", isCompleted: true)
+    static var item1 = ItemModel(
+        title: "First item",
+        details: "Remember to attach the PDF before sending.",
+        isCompleted: false
+    )
+    static var item2 = ItemModel(
+        title: "Second item",
+        details: "Already reviewed; just archive if no feedback comes in.",
+        isCompleted: true
+    )
 
     static var previews: some View {
         Group {

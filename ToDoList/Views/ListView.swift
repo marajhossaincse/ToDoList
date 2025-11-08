@@ -53,6 +53,7 @@ struct ListView: View {
             }
         }
         .navigationTitle("Today")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 if !listViewModel.items.isEmpty {
@@ -144,7 +145,11 @@ struct ListView: View {
     private var filteredItems: [ItemModel] {
         listViewModel.items
             .filter { filterSelection.includes($0) }
-            .filter { normalizedSearchText.isEmpty ? true : $0.title.localizedCaseInsensitiveContains(normalizedSearchText) }
+            .filter {
+                guard !normalizedSearchText.isEmpty else { return true }
+                return $0.title.localizedCaseInsensitiveContains(normalizedSearchText) ||
+                $0.details.localizedCaseInsensitiveContains(normalizedSearchText)
+            }
     }
 
     private var canEditList: Bool {

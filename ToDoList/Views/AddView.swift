@@ -13,6 +13,7 @@ struct AddView: View {
     @FocusState private var isTextFieldFocused: Bool
 
     @State private var textFieldText: String = ""
+    @State private var detailText: String = ""
 
     var body: some View {
         Form {
@@ -23,14 +24,63 @@ struct AddView: View {
                     .textInputAutocapitalization(.sentences)
             }
 
+            Section(header: Text("Description")) {
+                ZStack(alignment: .topLeading) {
+                    if detailText.isEmpty {
+                        Text("Add context, subtasks, or references (optional)")
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 8)
+                    }
+                    TextEditor(text: $detailText)
+                        .frame(minHeight: 96)
+                        .accessibilityLabel("Task description")
+                }
+            }
+
             Section(footer: Text("Keep the title short and actionable. Minimum 3 characters.")) {
                 Button(action: saveButtonPressed) {
-                    Label("Save Task", systemImage: "checkmark.circle.fill")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .center)
+                    HStack(spacing: 12) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .symbolRenderingMode(.monochrome)
+                            .foregroundColor(canSave ? Color.accentColor : Color.white)
+                            .padding(8)
+                            .background(
+                                Circle()
+                                    .fill(canSave ? Color.white : Color.white.opacity(0.3))
+                            )
+
+                        Text("Save Task")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                    .padding()
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.accentColor)
+                .frame(maxWidth: .infinity)
+                .background(
+                    Group {
+                        if canSave {
+                            LinearGradient(
+                                colors: [
+                                    Color.accentColor,
+                                    Color.accentColor.opacity(0.5)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        } else {
+                            Color(.systemGray5)
+                        }
+                    }
+                )
+                .cornerRadius(10)
+                .shadow(
+                    color: canSave ? Color.accentColor.opacity(0.35) : Color.clear,
+                    radius: 12,
+                    x: 0,
+                    y: 6
+                )
                 .disabled(!canSave)
             }
         }
@@ -59,12 +109,16 @@ struct AddView: View {
 
     func saveButtonPressed() {
         guard canSave else { return }
-        listViewModel.addItem(title: trimmedText)
+        listViewModel.addItem(title: trimmedText, details: trimmedDetails)
         dismiss()
     }
 
     private var trimmedText: String {
         textFieldText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var trimmedDetails: String {
+        detailText.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private var canSave: Bool {
